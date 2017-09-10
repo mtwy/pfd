@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.longhui.pfm.server.dao.BillDao">
+  <resultMap id="BaseResultMap" type="com.longhui.pfm.server.model.Bill">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="account" jdbcType="VARCHAR" property="account" />
+    <result column="money" jdbcType="DECIMAL" property="money" />
+    <result column="funds_source" jdbcType="VARCHAR" property="fundsSource" />
+    <result column="funds_trend" jdbcType="VARCHAR" property="fundsTrend" />
+    <result column="type" jdbcType="VARCHAR" property="type" />
+    <result column="remarks" jdbcType="VARCHAR" property="remarks" />
+    <result column="created_at" jdbcType="TIMESTAMP" property="createdAt" />
+    <result column="updated_at" jdbcType="TIMESTAMP" property="updatedAt" />
+    <result column="status" jdbcType="VARCHAR" property="status" />
+    <result column="del_flag" jdbcType="BIT" property="delFlag" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, account, money, funds_source, funds_trend, type, remarks, created_at, updated_at, 
+    status, del_flag
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_bill
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from t_bill
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.longhui.pfm.server.model.Bill">
+    insert into t_bill (id, account, money, 
+      funds_source, funds_trend, type, 
+      remarks, created_at, updated_at, 
+      status, del_flag)
+    values (#{id,jdbcType=BIGINT}, #{account,jdbcType=VARCHAR}, #{money,jdbcType=DECIMAL}, 
+      #{fundsSource,jdbcType=VARCHAR}, #{fundsTrend,jdbcType=VARCHAR}, #{type,jdbcType=VARCHAR}, 
+      #{remarks,jdbcType=VARCHAR}, #{createdAt,jdbcType=TIMESTAMP}, #{updatedAt,jdbcType=TIMESTAMP}, 
+      #{status,jdbcType=VARCHAR}, #{delFlag,jdbcType=BIT})
+  </insert>
+  <insert id="insertSelective" parameterType="com.longhui.pfm.server.model.Bill">
+    insert into t_bill
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="account != null">
+        account,
+      </if>
+      <if test="money != null">
+        money,
+      </if>
+      <if test="fundsSource != null">
+        funds_source,
+      </if>
+      <if test="fundsTrend != null">
+        funds_trend,
+      </if>
+      <if test="type != null">
+        type,
+      </if>
+      <if test="remarks != null">
+        remarks,
+      </if>
+      <if test="createdAt != null">
+        created_at,
+      </if>
+      <if test="updatedAt != null">
+        updated_at,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
+      <if test="delFlag != null">
+        del_flag,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="account != null">
+        #{account,jdbcType=VARCHAR},
+      </if>
+      <if test="money != null">
+        #{money,jdbcType=DECIMAL},
+      </if>
+      <if test="fundsSource != null">
+        #{fundsSource,jdbcType=VARCHAR},
+      </if>
+      <if test="fundsTrend != null">
+        #{fundsTrend,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null">
+        #{type,jdbcType=VARCHAR},
+      </if>
+      <if test="remarks != null">
+        #{remarks,jdbcType=VARCHAR},
+      </if>
+      <if test="createdAt != null">
+        #{createdAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatedAt != null">
+        #{updatedAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="delFlag != null">
+        #{delFlag,jdbcType=BIT},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.longhui.pfm.server.model.Bill">
+    update t_bill
+    <set>
+      <if test="account != null">
+        account = #{account,jdbcType=VARCHAR},
+      </if>
+      <if test="money != null">
+        money = #{money,jdbcType=DECIMAL},
+      </if>
+      <if test="fundsSource != null">
+        funds_source = #{fundsSource,jdbcType=VARCHAR},
+      </if>
+      <if test="fundsTrend != null">
+        funds_trend = #{fundsTrend,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null">
+        type = #{type,jdbcType=VARCHAR},
+      </if>
+      <if test="remarks != null">
+        remarks = #{remarks,jdbcType=VARCHAR},
+      </if>
+      <if test="createdAt != null">
+        created_at = #{createdAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatedAt != null">
+        updated_at = #{updatedAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="delFlag != null">
+        del_flag = #{delFlag,jdbcType=BIT},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.longhui.pfm.server.model.Bill">
+    update t_bill
+    set account = #{account,jdbcType=VARCHAR},
+      money = #{money,jdbcType=DECIMAL},
+      funds_source = #{fundsSource,jdbcType=VARCHAR},
+      funds_trend = #{fundsTrend,jdbcType=VARCHAR},
+      type = #{type,jdbcType=VARCHAR},
+      remarks = #{remarks,jdbcType=VARCHAR},
+      created_at = #{createdAt,jdbcType=TIMESTAMP},
+      updated_at = #{updatedAt,jdbcType=TIMESTAMP},
+      status = #{status,jdbcType=VARCHAR},
+      del_flag = #{delFlag,jdbcType=BIT}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  
+  <!-- ========================================= -->
+  
+  <!-- 获取所有 -->
+  <select id="selectAll" parameterType="map" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_bill
+    <where>
+    	del_flag = '0'
+    	AND account = #{account,jdbcType=VARCHAR}
+    	<if test="updatedAt != null and updatedAt != ''">
+    		<![CDATA[AND updated_at > DATE_FORMAT(#{updatedAt,jdbcType=VARCHAR}, '%y-%m-%d %H:%i:%s')]]>
+    	</if>
+    </where>
+    ORDER BY updated_at DESC
+    <if test="start != null and pageCount != null">
+    LIMIT #{start,jdbcType=INTEGER}, #{pageCount,jdbcType=INTEGER}
+    </if>
+  </select>
+  
+  <!-- 统计 -->
+  <select id="countAll" parameterType="map" resultType="java.lang.Integer">
+    select COUNT(*)
+    from t_bill
+    <where>
+    	del_flag = '0'
+    	AND account = #{account,jdbcType=VARCHAR}
+    	<if test="updatedAt != null and updatedAt != ''">
+    		<![CDATA[AND updated_at > DATE_FORMAT(#{updatedAt,jdbcType=VARCHAR}, '%y-%m-%d %H:%i:%s')]]>
+    	</if>
+    </where>
+  </select>
+</mapper>

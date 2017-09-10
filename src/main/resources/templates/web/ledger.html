@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>账簿-历史账单</title>
+<link th:href="@{/plugin/bootstrap/css/bootstrap.min.css}" rel="stylesheet" media="screen">
+<link th:href="@{/plugin/DataTables-1.10.13/media/css/jquery.myDataTables.css}" rel="stylesheet" media="screen">
+<link rel="stylesheet" th:href="@{/plugin/layui/css/layui.css}">
+<style type="text/css">
+	body{padding: 15px;}
+</style>
+</head>
+<body>
+	<input type="hidden" id="baseUrl" th:value="@{/}">
+	
+	<div style="margin-bottom: 10px;">
+		<button id="btnToAddLedger" class="layui-btn layui-btn-normal">添加资金账户</button>
+	</div>
+	<table class="data-table display">
+	    <thead>
+	        <tr>
+	            <th>序号</th>
+	            <th>账户</th>
+	            <th>余额</th>
+	            <th>备注</th>
+	            <th>创建时间</th>
+	            <th>操作</th>
+	        </tr>
+	    </thead>
+	    <tbody>
+	    </tbody>
+	</table>
+
+	<div id="addLedgerFrame" style="display: none;">
+		<form class="layui-form" action="#">
+			<div class="layui-form-item" style="padding: 20px 20px 0 0px;">
+				<label class="layui-form-label" style="width: 100px;"><label style="color: red;">*</label> 资金账户</label>
+				<div class="layui-input-block">
+					<input type="text" name="name" required lay-verify="required"
+						placeholder="请输入账户" class="layui-input" width="10px;">
+				</div>
+			</div>
+			<div class="layui-form-item" style="padding: 0px 20px 0 0px;">
+				<label class="layui-form-label" style="width: 100px;">备注</label>
+				<div class="layui-input-block">
+					<textarea name="remarks" placeholder="请输入内容" class="layui-textarea"></textarea>
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<div class="layui-input-block">
+					<button class="layui-btn" lay-submit lay-filter="formDemo">立即提交</button>
+				</div>
+			</div>
+		</form>
+	</div>
+	<script type="text/html" id="barDemo">
+  <a class="layui-btn layui-btn-mini" lay-event="detail">查看</a>
+</script>
+
+	<script th:src="@{/plugin/jquery-1.11.1/jquery.min.js}"></script>
+	<script th:src="@{/plugin/DataTables-1.10.13/media/js/jquery.dataTables.min.js}"></script>
+	<script th:src="@{/plugin/layui/layui.js}"></script>
+	<script>
+
+		var baseUrl = $('#baseUrl').val();
+		if (window.screen.width <= 720) {
+			baseUrl += 'wap/';
+		} else {
+			baseUrl += 'web/';
+		}
+		
+		// layui
+		var layer = null;
+		var table = null;
+		var form = null;
+		
+		$(function(){
+		
+			layui.use(['layer', 'table', 'form'], function(){
+				layer = layui.layer;
+				table = layui.table;
+				form = layui.form;
+				
+				//监听提交
+				form.on('submit(formDemo)', function(data) {
+					$.ajax({
+						type: 'POST',
+						dataType: 'json',
+						url: baseUrl + "addledger",
+						data: {
+							'name': data.field.name,
+							'remarks': data.field.remarks,
+						},
+						success : function(result) {
+							if (result.isSuccess) {
+								layer.msg('添加成功', {
+									icon: 1,
+									time: 2000,
+									end: function(){ 
+										window.location.reload();
+									},
+								});
+								return true;
+							} else {
+								layer.msg('添加失败 '+result.message, {
+									icon: 2,
+									time: 2000,
+								});
+							}
+						},
+					});
+					return false;
+				});
+			});
+			
+			/* 表格初始化 */
+			window.table = $('.data-table').DataTable({
+				
+				//"sPaginationType" : "full_numbers",
+				//"bPaginate" : true,//分页工具条显示  
+				//"bStateSave" : true, //是否打开客户端状态记录功能,此功能在ajax刷新纪录的时候不会将个性化设定回复为初始化状态    
+				//"bScrollCollapse" : true, //当显示的数据不足以支撑表格的默认的高度  
+				//"bLengthChange" : true, //每页显示的记录数  
+				//"bFilter" : false, //搜索栏  
+				//"bSort" : true, //是否支持排序功能  
+				//"bInfo" : true, //显示表格信息  
+				//"bAutoWidth" : true, //自适应宽度  
+				//"bJQueryUI" : false,//是否开启主题  
+				//"bDestroy" : true,  
+				//"bProcessing" : true, //开启读取服务器数据时显示正在加载中……特别是大数据量的时候，开启此功能比较好  
+				//"bServerSide" : true,//服务器处理分页，默认是false，需要服务器处理，必须true  
+				//"sAjaxDataProp" : "aData",//是服务器分页的标志，必须有   
+				//"sAjaxSource" : "${basePath}pushEntity/getTableData",//通过ajax实现分页的url路径。    
+			
+				"bAutoWidth" : false, // 自动宽度
+				"pagingType" : "full_numbers",// 数字翻页样式
+				"bJQueryUI" : true,
+				"dom" : 'rt<"F"ilp>',
+				"aLengthMenu" : [20, 40, 60],   //更改显示记录数选项  
+				"iDisplayLength" : 20,          //默认显示的记录数  
+				"processing" : true,
+				"serverSide" : true,
+				"bStateSave": false,
+				"searching" : false,
+				// "ordering":true,
+				"oLanguage" : {
+					sUrl : $('#baseUrl').val()+"plugin/DataTables-1.10.13/media/language/zh_CN.json"
+				},
+				"ajax" : {
+					"type" : "POST",
+					"url" : baseUrl + 'getallledgersbyaccount',
+					"data": function ( req ) {
+						var param = {};
+						param.draw = req.draw;
+						param.start = req.start;
+						param.pageCount = req.length;
+						return param;
+					 },
+					"dataSrc" : function(json) {
+						json.recordsTotal = json.dataMaxCount;
+						json.recordsFiltered = json.dataMaxCount;
+						window.message = json.message;
+						return json.data;
+					}
+				},
+				"columnDefs" : [ {
+					"searchable" : false,
+					"orderable" : false,
+					"targets" : 0
+				} ],
+				"order" : [ [ 1, 'asc' ] ],
+				"columns" : [
+					{"data" : "id","visible" : false},
+					{"data" : "name"},
+					{"data" : null,
+						"render" : function(data) {
+							return '￥'+data.balance;//new Date(data.createdAt).format("yyyy-MM-dd hh:mm:ss");
+						}
+					},
+					{"data" : "remarks"},
+					{"data" : "createdAt"},
+					/* {"data" : null,
+						"render" : function(data) {
+							return '{{ '+data.createdAt.time+' | date("yyyy-MM-dd:HH:mm:ss")}}';//new Date(data.createdAt).format("yyyy-MM-dd hh:mm:ss");
+						}
+					}, */
+					{"data" : null,
+						"render" : function(data, type,row) {
+							return "<a>编辑</a>"+
+									"<a>删除</a>";
+						}
+					}
+				],
+				"drawCallback" : function(settings) {
+					/* table按钮启用avalon */
+				},
+				"fnPreDrawCallback":function(oSettings){
+					if(oSettings.aoData.length == 0){
+						oSettings.oLanguage.sEmptyTable = "暂无数据";
+					 }
+					return oSettings;
+				 }
+			});
+			
+			$('#btnToAddLedger').click(function(){
+				layer.open({
+					  type: 1,
+					  title: '添加资金账户',
+					  //skin: 'layui-layer-rim', //加上边框
+					  area: ['600px', '300px'], //宽高
+					  content: $('#addLedgerFrame').html()
+					});
+			});
+		});
+	</script>
+</body>
+</html>

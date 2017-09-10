@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>账簿-入账</title>
+<link rel="stylesheet" th:href="@{/plugin/layui/css/layui.css}">
+<style type="text/css">
+body{
+	min-width: 1000px;
+}
+</style>
+</head>
+<body>
+	<input type="hidden" id="baseUrl" th:value="@{/}">
+	<div class="layui-layout layui-layout-admin">
+		<div class="layui-header">
+			<div class="layui-logo">账簿</div>
+			<!-- 头部区域（可配合layui已有的水平导航） -->
+			<ul class="layui-nav layui-layout-left">
+				<li class="layui-nav-item"><a href="">控制台</a></li>
+				<li class="layui-nav-item"><a href="">商品管理</a></li>
+				<li class="layui-nav-item"><a href="">用户</a></li>
+				<li class="layui-nav-item"><a href="javascript:;">其它系统</a>
+					<dl class="layui-nav-child">
+						<dd>
+							<a href="">邮件管理</a>
+						</dd>
+						<dd>
+							<a href="">消息管理</a>
+						</dd>
+						<dd>
+							<a href="">授权管理</a>
+						</dd>
+					</dl></li>
+			</ul>
+			<ul class="layui-nav layui-layout-right">
+				<li class="layui-nav-item"><a href="javascript:;"> <img
+						src="/images/thumb/default.jpg" class="layui-nav-img"> <span th:text="${session.user.account}"></span>
+				</a>
+					<dl class="layui-nav-child">
+						<dd>
+							<a href="">基本资料</a>
+						</dd>
+						<dd>
+							<a href="">安全设置</a>
+						</dd>
+					</dl></li>
+				<li class="layui-nav-item"><a href="">退了</a></li>
+			</ul>
+		</div>
+
+		<div class="layui-side layui-bg-black">
+			<div class="layui-side-scroll">
+				<!-- 左侧导航区域（可配合layui已有的垂直导航） -->
+				<ul class="layui-nav layui-nav-tree" lay-filter="test">
+					<li class="layui-nav-item layui-this">
+						<a th:href="@{/web/tohome}" target="iframe">首页</a>
+					</li>
+					<li class="layui-nav-item">
+						<a class="" href="javascript:;">资金管理</a>
+						<dl class="layui-nav-child">
+							<dd>
+								<a th:href="@{/web/tobills}" target="iframe">历史账单</a>
+							</dd>
+							<dd>
+								<a th:href="@{/web/toincome}" target="iframe">入账</a>
+							</dd>
+							<dd>
+								<a th:href="@{/web/todefray}" target="iframe">出账</a>
+							</dd>
+							<dd>
+								<a th:href="@{/web/toflat}" target="iframe">账户间转账</a>
+							</dd>
+						</dl></li>
+					<li class="layui-nav-item">
+						<a th:href="@{/web/toledger}" target="iframe">账户管理</a>
+					</li>
+					<!-- <li class="layui-nav-item"><a href="">发布商品</a></li> -->
+				</ul>
+			</div>
+		</div>
+
+		<div class="layui-body">
+			<!-- 内容主体区域 -->
+			<div style="padding: 15px;">&nbsp;</div>
+			<iframe th:src="@{/web/tohome}" name="iframe" frameborder="0" width="95%" height="100%"></iframe>           
+
+		</div>
+
+		<div class="layui-footer">
+			<!-- 底部固定区域 -->
+			© layui.com - 底部固定区域
+		</div>
+	</div>
+	
+	
+	<script th:src="@{/plugin/jquery-1.11.1/jquery.min.js}"></script>
+	<script th:src="@{/plugin/layui/layui.js}"></script>
+	<script>
+		layui.use('element', function() {
+			var element = layui.element;
+
+		});
+	</script>
+</body>
+</html>

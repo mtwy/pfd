@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.longhui.pfm.server.dao.LedgerDao">
+  <resultMap id="BaseResultMap" type="com.longhui.pfm.server.model.Ledger">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="account" jdbcType="VARCHAR" property="account" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="balance" jdbcType="DECIMAL" property="balance" />
+    <result column="remarks" jdbcType="VARCHAR" property="remarks" />
+    <result column="created_at" jdbcType="TIMESTAMP" property="createdAt" />
+    <result column="updated_at" jdbcType="TIMESTAMP" property="updatedAt" />
+    <result column="status" jdbcType="VARCHAR" property="status" />
+    <result column="del_flag" jdbcType="BIT" property="delFlag" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, account, name, balance, remarks, created_at, updated_at, status, del_flag
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_ledger
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from t_ledger
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.longhui.pfm.server.model.Ledger">
+    insert into t_ledger (id, account, name, 
+      balance, remarks, created_at, 
+      updated_at, status, del_flag
+      )
+    values (#{id,jdbcType=BIGINT}, #{account,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, 
+      #{balance,jdbcType=DECIMAL}, #{remarks,jdbcType=VARCHAR}, #{createdAt,jdbcType=TIMESTAMP}, 
+      #{updatedAt,jdbcType=TIMESTAMP}, #{status,jdbcType=VARCHAR}, #{delFlag,jdbcType=BIT}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.longhui.pfm.server.model.Ledger">
+    insert into t_ledger
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="account != null">
+        account,
+      </if>
+      <if test="name != null">
+        name,
+      </if>
+      <if test="balance != null">
+        balance,
+      </if>
+      <if test="remarks != null">
+        remarks,
+      </if>
+      <if test="createdAt != null">
+        created_at,
+      </if>
+      <if test="updatedAt != null">
+        updated_at,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
+      <if test="delFlag != null">
+        del_flag,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="account != null">
+        #{account,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null">
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="balance != null">
+        #{balance,jdbcType=DECIMAL},
+      </if>
+      <if test="remarks != null">
+        #{remarks,jdbcType=VARCHAR},
+      </if>
+      <if test="createdAt != null">
+        #{createdAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatedAt != null">
+        #{updatedAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="delFlag != null">
+        #{delFlag,jdbcType=BIT},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.longhui.pfm.server.model.Ledger">
+    update t_ledger
+    <set>
+      <if test="account != null">
+        account = #{account,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null">
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="balance != null">
+        balance = #{balance,jdbcType=DECIMAL},
+      </if>
+      <if test="remarks != null">
+        remarks = #{remarks,jdbcType=VARCHAR},
+      </if>
+      <if test="createdAt != null">
+        created_at = #{createdAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatedAt != null">
+        updated_at = #{updatedAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="delFlag != null">
+        del_flag = #{delFlag,jdbcType=BIT},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.longhui.pfm.server.model.Ledger">
+    update t_ledger
+    set account = #{account,jdbcType=VARCHAR},
+      name = #{name,jdbcType=VARCHAR},
+      balance = #{balance,jdbcType=DECIMAL},
+      remarks = #{remarks,jdbcType=VARCHAR},
+      created_at = #{createdAt,jdbcType=TIMESTAMP},
+      updated_at = #{updatedAt,jdbcType=TIMESTAMP},
+      status = #{status,jdbcType=VARCHAR},
+      del_flag = #{delFlag,jdbcType=BIT}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  
+  <!-- ============================================= -->
+  <!-- 通过获取所有 -->
+  <select id="selectAll" parameterType="map" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List" />
+    from t_ledger
+    where 
+    	del_flag = '0'
+    	AND account = #{account,jdbcType=VARCHAR}
+    ORDER BY updated_at DESC
+    <if test="start != null and pageCount != null">
+    LIMIT #{start,jdbcType=INTEGER}, #{pageCount,jdbcType=INTEGER}
+    </if>
+  </select>
+  
+  <!-- 统计 -->
+  <select id="countAll" parameterType="map" resultType="java.lang.Integer">
+    select COUNT(*)
+    from t_ledger
+    where 
+    	del_flag = '0'
+    	AND account = #{account,jdbcType=VARCHAR}
+  </select>
+  
+  <!-- 根据分账类别查找用户分账信息 -->
+  <select id="selectByName" parameterType="map" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List" />
+    from t_ledger
+    where
+    	del_flag = '0'
+    	AND account = #{account,jdbcType=VARCHAR}
+    	AND name = #{name,jdbcType=VARCHAR}
+  </select>
+</mapper>

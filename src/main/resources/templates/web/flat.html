@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>账簿-转账</title>
+<link rel="stylesheet" th:href="@{/plugin/layui/css/layui.css}">
+</head>
+<body>
+	<input type="hidden" id="baseUrl" th:value="@{/}">
+	<form class="layui-form">
+		<div class="layui-form-item">
+			<label class="layui-form-label">金额</label>
+			<div class="layui-input-block">
+				<input type="number" id="money" required lay-verify="required"
+					placeholder="请输入金额"  autocomplete="off" class="layui-input">
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">出账账户</label>
+			<div class="layui-input-block">
+				<select id="fundsSource" lay-verify="required">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">入账账户</label>
+			<div class="layui-input-block">
+				<select id="fundsTrend" lay-verify="required">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">交易时间</label>
+			<div class="layui-input-block">
+				<input type="text" class="layui-input" id="createdAt" placeholder="请选择交易时间">
+			</div>
+		</div>
+		<div class="layui-form-item layui-form-text">
+			<label class="layui-form-label">备注</label>
+			<div class="layui-input-block">
+				<textarea id="remarks" placeholder="请输入内容" class="layui-textarea"></textarea>
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<div class="layui-input-block">
+				<button class="layui-btn" lay-submit lay-filter="formDemo">立即提交</button>
+				<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+			</div>
+		</div>
+	</form>
+
+	<script th:src="@{/plugin/jquery-1.11.1/jquery.min.js}"></script>
+	<script th:src="@{/plugin/layui/layui.js}"></script>
+	<script th:src="@{/js/common.js}"></script>
+	<script>
+
+		// layui
+		var form = null;
+		var layer = null;
+		var laydate = null;
+		
+		$(function(){
+
+			$('#createdAt').val(new Date().format('yyyy-MM-dd'));
+		
+			layui.use(['layer', 'form', 'laydate'], function(){
+				layer = layui.layer;
+				form = layui.form;
+				laydate = layui.laydate;
+				
+				// 日期控件初始化
+				laydate.render({
+				    elem: '#createdAt' //指定元素
+				    ,max: new Date().format('yyyy-MM-dd')
+				});
+				
+				  
+				//监听提交
+				form.on('submit(formDemo)', function(data) {
+					$.ajax({
+						type: 'POST',
+						dataType: 'json',
+						url: baseUrl + "flat",
+						data: {
+							'fundsSource': $('#fundsSource').val(),
+							'fundsTrend': $('#fundsTrend').val(),
+							'money': $('#money').val(),
+							'remarks': $('#remarks').val(),
+						},
+						success : function(result) {
+							if (result.isSuccess) {
+								//询问框
+								var confirm = layer.confirm('转账成功', {
+									btn: ['继续','返回管理'] //按钮
+								}, function(){
+									 window.location.reload();//刷新当前页面
+								}, function(){
+									window.location.href = baseUrl + 'tohome';
+								});
+								return true;
+							} else {
+								layer.msg('转账失败 '+result.message, {
+									icon: 2,
+									time: 2000,
+								});
+							}
+						},
+					});
+					return false;
+				});
+			});
+			
+			// 初始化获取所有资金账户
+			$.ajax({
+				type: 'POST',
+				dataType: 'json',
+				url: baseUrl + "getallledgersbyaccount",
+				data: {},
+				success : function(result) {
+					if (result.isSuccess) {
+						var ledgers = result.data;
+						for(var i = 0; i < ledgers.length; i++){
+							$('#fundsSource').append('<option value="'+ledgers[i].name+'">'+ledgers[i].name+'</option>');
+							$('#fundsTrend').append('<option value="'+ledgers[i].name+'">'+ledgers[i].name+'</option>');
+						}
+					} else {
+						layer.msg('加载失败 '+result.message, {
+							icon: 2,
+							time: 2000,
+						});
+					}
+				},
+			});
+		});
+	</script>
+</body>
+</html>

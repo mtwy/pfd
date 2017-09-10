@@ -1,0 +1,61 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="chrome=1">
+<meta name="viewport"
+	content="initial-scale=1.0, user-scalable=no, width=device-width">
+
+<!-- 引入样式 -->
+<link rel="stylesheet"
+	href="https://unpkg.com/element-ui/lib/theme-default/index.css">
+<!-- 引入组件库 -->
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+
+<style type="text/css">
+body, html, #container {
+	height: 100%;
+	margin: 0px;
+}
+</style>
+<title>咫尺天涯-首页</title>
+</head>
+<body>
+	<input type="hidden" id="baseUrl" th:value="@{/}">
+
+
+	<script th:src="@{/plugin/jquery-1.11.1/jquery.min.js}"></script>
+
+	<script type="text/javascript">
+	
+		$(function() {
+			var baseUrl = $('#baseUrl').val();
+			if (window.screen.width <= 720) {
+				baseUrl += 'wap/';
+			} else {
+				baseUrl += 'web/';
+			}
+			window.location.href = baseUrl+'tologin';
+			/* var s = "";   
+		      s += " 网页可见区域宽："+ document.body.clientWidth+"<br>";    
+		      s += " 网页可见区域高："+ document.body.clientHeight+"<br>";    
+		      s += " 网页可见区域宽："+ document.body.offsetWidth + " (包括边线和滚动条的宽)"+"<br>";    
+		      s += " 网页可见区域高："+ document.body.offsetHeight + " (包括边线的宽)"+"<br>";    
+		      s += " 网页正文全文宽："+ document.body.scrollWidth+"<br>";    
+		      s += " 网页正文全文高："+ document.body.scrollHeight+"<br>";    
+		      s += " 网页被卷去的高(ff)："+ document.body.scrollTop+"<br>";    
+		      s += " 网页被卷去的高(ie)："+ document.documentElement.scrollTop+"<br>";    
+		      s += " 网页被卷去的左："+ document.body.scrollLeft+"<br>";    
+		      s += " 网页正文部分上："+ window.screenTop+"<br>";    
+		      s += " 网页正文部分左："+ window.screenLeft+"<br>";    
+		      s += " 屏幕分辨率的高："+ window.screen.height+"<br>";    
+		      s += " 屏幕分辨率的宽："+ window.screen.width+"<br>";    
+		      s += " 屏幕可用工作区高度："+ window.screen.availHeight+"<br>";    
+		      s += " 屏幕可用工作区宽度："+ window.screen.availWidth+"<br>";    
+		      s += " 你的屏幕设置是 "+ window.screen.colorDepth +" 位彩色"+"<br>";    
+		      s += " 你的屏幕设置 "+ window.screen.deviceXDPI +" 像素/英寸"+"<br>";   
+		      document.writeln(s+"<br>"); */
+		});
+	</script>
+</body>
+</html>

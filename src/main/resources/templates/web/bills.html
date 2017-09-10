@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>账簿-历史账单</title>
+<link th:href="@{/plugin/bootstrap/css/bootstrap.min.css}" rel="stylesheet" media="screen">
+<link th:href="@{/plugin/DataTables-1.10.13/media/css/jquery.myDataTables.css}" rel="stylesheet" media="screen">
+<link rel="stylesheet" th:href="@{/plugin/layui/css/layui.css}">
+<style type="text/css">
+	body{padding: 15px;}
+</style>
+</head>
+<body>
+	<input type="hidden" id="baseUrl" th:value="@{/}">
+	
+	<table class="data-table display">
+	    <thead>
+	        <tr>
+	            <th>序号</th>
+	            <th>金额</th>
+	            <th>资金来源</th>
+	            <th>资金流向</th>
+	            <th>备注</th>
+	            <th>交易时间</th>
+	            <th>创建时间</th>
+	            <th>操作</th>
+	        </tr>
+	    </thead>
+	    <tbody>
+	    </tbody>
+	</table>
+	
+	<!-- <table class="layui-table" lay-data="{width:'auto',height:'auto',limit:10, url:'/web/getallbills', page:true, id:'test', request:{limitName:'pageCount'},response:{countName: 'dataMaxCount'}}" lay-filter="test">
+  <thead>
+    <tr>
+      <th lay-data="{checkbox: true}"></th>
+      <th lay-data="{field:'money', width:100, templet:'<div>￥{{d.money}}</div>'}">金额</th>
+      <th lay-data="{field:'type', width:150, sort: true}">类型</th>
+      <th lay-data="{field:'fundsSource', width:150, sort: true}">资金来源</th>
+      <th lay-data="{field:'fundsTrend', width:150}">资金流向</th>
+      <th lay-data="{field:'remarks', width:150}">备注</th>
+      <th lay-data="{field:'createdAt', width:190}">创建时间</th>
+      <th lay-data="{fixed: 'right', width:70, align:'center', toolbar: '#barDemo'}"></th>
+    </tr>
+  </thead>
+</table> -->
+<script type="text/html" id="barDemo">
+  <a class="layui-btn layui-btn-mini" lay-event="detail">查看</a>
+</script>
+
+	<script th:src="@{/plugin/jquery-1.11.1/jquery.min.js}"></script>
+	<script th:src="@{/plugin/DataTables-1.10.13/media/js/jquery.dataTables.min.js}"></script>
+	<script th:src="@{/plugin/layui/layui.js}"></script>
+	<script>
+
+		var baseUrl = $('#baseUrl').val();
+		if (window.screen.width <= 720) {
+			baseUrl += 'wap/';
+		} else {
+			baseUrl += 'web/';
+		}
+		
+		// layui
+		var layer = null;
+		var table = null;
+		
+		$(function(){
+		
+			layui.use(['layer', 'table'], function(){
+				layer = layui.layer;
+				table = layui.table;
+			});
+			
+			/* 表格初始化 */
+			window.table = $('.data-table').DataTable({
+				
+				//"sPaginationType" : "full_numbers",
+				//"bPaginate" : true,//分页工具条显示  
+				//"bStateSave" : true, //是否打开客户端状态记录功能,此功能在ajax刷新纪录的时候不会将个性化设定回复为初始化状态    
+				//"bScrollCollapse" : true, //当显示的数据不足以支撑表格的默认的高度  
+				//"bLengthChange" : true, //每页显示的记录数  
+				//"bFilter" : false, //搜索栏  
+				//"bSort" : true, //是否支持排序功能  
+				//"bInfo" : true, //显示表格信息  
+				//"bAutoWidth" : true, //自适应宽度  
+				//"bJQueryUI" : false,//是否开启主题  
+				//"bDestroy" : true,  
+				//"bProcessing" : true, //开启读取服务器数据时显示正在加载中……特别是大数据量的时候，开启此功能比较好  
+				//"bServerSide" : true,//服务器处理分页，默认是false，需要服务器处理，必须true  
+				//"sAjaxDataProp" : "aData",//是服务器分页的标志，必须有   
+				//"sAjaxSource" : "${basePath}pushEntity/getTableData",//通过ajax实现分页的url路径。    
+			
+				"bAutoWidth" : false, // 自动宽度
+				"pagingType" : "full_numbers",// 数字翻页样式
+				"bJQueryUI" : true,
+				"dom" : 'rt<"F"ilp>',
+				"aLengthMenu" : [20, 40, 60],   //更改显示记录数选项  
+				"iDisplayLength" : 20,          //默认显示的记录数  
+				"processing" : true,
+				"serverSide" : true,
+				"bStateSave": false,
+				"bScrollCollapse" : false,
+				"searching" : false,
+				// "ordering":true,
+				"oLanguage" : {
+					sUrl : $('#baseUrl').val()+"plugin/DataTables-1.10.13/media/language/zh_CN.json"
+				},
+				"ajax" : {
+					"type" : "POST",
+					"url" : baseUrl + 'getallbills',
+					"data": function ( req ) {
+						var param = {};
+						param.draw = req.draw;
+						param.start = req.start;
+						param.pageCount = req.length;
+						/* window.vm_atc001.sendParam.draw = req.draw;
+						window.vm_atc001.sendParam.start = req.start;
+						window.vm_atc001.sendParam.pageCount = req.length;
+						window.vm_atc001.sendParam.title;
+						window.vm_atc001.sendParam.ctgrId;
+						window.vm_atc001.sendParam.authName;
+						window.vm_atc001.sendParam.createdAtStart;
+						window.vm_atc001.sendParam.createdAtEnd; 
+						return window.vm_atc001.sendParam;*/
+						return param;
+					 },
+					"dataSrc" : function(json) {
+						json.recordsTotal = json.dataMaxCount;
+						json.recordsFiltered = json.dataMaxCount;
+						window.message = json.message;
+						return json.data;
+					}
+				},
+				"columnDefs" : [ {
+					"searchable" : false,
+					"orderable" : false,
+					"targets" : 0
+				} ],
+				"order" : [ [ 1, 'asc' ] ],
+				"columns" : [
+					{"data" : "id","visible" : false},
+					{"data" : null,
+						"render" : function(data, type,row) {
+							if(data.type == "01.income"){
+								return "入账";
+							}else if(data.type == "02.defray"){
+								return "出账";
+							}else if(data.type == "03.flat"){
+								return "账户间转账";
+							}
+						}
+					},
+					{"data" : null,
+						"render" : function(data) {
+							return '￥'+data.money;//new Date(data.createdAt).format("yyyy-MM-dd hh:mm:ss");
+						}
+					},
+					{"data" : "fundsSource"},
+					{"data" : "fundsTrend"},
+					{"data" : "remarks"},
+					{"data" : "createdAt"},
+					{"data" : "updatedAt"},
+					/* {"data" : null,
+						"render" : function(data) {
+							return '{{ '+data.createdAt.time+' | date("yyyy-MM-dd:HH:mm:ss")}}';//new Date(data.createdAt).format("yyyy-MM-dd hh:mm:ss");
+						}
+					}, */
+				],
+				"drawCallback" : function(settings) {
+					/* table按钮启用avalon */
+				},
+				"fnPreDrawCallback":function(oSettings){
+					if(oSettings.aoData.length == 0){
+						oSettings.oLanguage.sEmptyTable = "暂无数据";
+					 }
+					return oSettings;
+				 }
+			});
+			
+			// 初始化获取所有资金账户
+			/* $.ajax({
+				type: 'POST',
+				dataType: 'json',
+				url: baseUrl + "ledger/getallbyaccount",
+				data: {},
+				success : function(result) {
+					if (result.isSuccess) {
+						var ledgers = result.data;
+						for(var i = 0; i < ledgers.length; i++){
+							$('#fundsSource').append('<option value="'+ledgers[i].name+'">'+ledgers[i].name+'</option>');
+							$('#fundsTrend').append('<option value="'+ledgers[i].name+'">'+ledgers[i].name+'</option>');
+						}
+					} else {
+						layer.msg('加载失败 '+result.message, {
+							icon: 2,
+							time: 2000,
+						});
+					}
+				},
+			}); */
+		});
+	</script>
+</body>
+</html>

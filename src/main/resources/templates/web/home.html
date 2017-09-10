@@ -1,0 +1,136 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>咫尺天涯-首页</title>
+</head>
+<body>
+	<input type="hidden" id="baseUrl" th:value="@{/}">
+	
+	<div id="container" style="min-width: 400px; height: 400px"></div>
+
+	<script th:src="@{/plugin/jquery-1.11.1/jquery.min.js}"></script>
+	<script th:src="@{/plugin/layer/layer.js}"></script>
+	<script th:src="@{/plugin/Highcharts-5.0.14/highcharts.js}"></script>
+	<script th:src="@{/plugin/Highcharts-5.0.14/highcharts-zh_CN.js}"></script>
+	<script>
+		var baseUrl = $('#baseUrl').val();
+		if (window.screen.width <= 720) {
+			baseUrl += 'wap/';
+		} else {
+			baseUrl += 'web/';
+		}
+		$(function() {
+			window.chart = Highcharts.chart('container', {
+				chart : {
+					plotBackgroundColor : null,
+					plotBorderWidth : null,
+					plotShadow : false
+				},
+				title : {
+					text : '总资产'
+				},
+				tooltip : {
+					headerFormat : '{series.name}<br>',
+					pointFormat : '{point.name}: <b>￥{point.y:.2f}</b>'
+				},
+				plotOptions : {
+					pie : {
+						allowPointSelect : true,
+						cursor : 'pointer',
+						dataLabels : {
+							enabled : true
+						},
+						showInLegend : true
+					}
+				},
+				credits:{
+				     enabled:false // 禁用版权信息
+				},
+				series : [ {
+					type : 'pie',
+					name : '资金账户',
+					data : []
+				} ]
+		    });
+			/* window.chart = $('#container').highcharts({
+				chart : {
+					plotBackgroundColor : null,
+					plotBorderWidth : null,
+					plotShadow : false
+				},
+				title : {
+					text : '总资产'
+				},
+				tooltip : {
+					headerFormat : '{series.name}<br>',
+					pointFormat : '{point.name}: <b>{point.percentage:.1f}%</b>'
+				},
+				plotOptions : {
+					pie : {
+						allowPointSelect : true,
+						cursor : 'pointer',
+						dataLabels : {
+							enabled : true
+						},
+						showInLegend : true
+					}
+				},
+				credits:{
+				     enabled:false // 禁用版权信息
+				},
+				series : [ {
+					type : 'pie',
+					name : '资金账户',
+					data : []
+				} ]
+			}); */
+			
+			// 初始化
+			// 初始化获取总资产
+			$.ajax({
+				type: 'POST',
+				dataType: 'json',
+				url: baseUrl + "asset/getassetbyaccount",
+				data: {},
+				success : function(result) {
+					if (result.isSuccess) {
+						window.chart.title.update({text: '总资产: ￥' + result.data.balance });
+					} else {
+						layer.msg('加载失败 '+result.message, {
+							icon: 2,
+							time: 2000,
+						});
+					}
+				},
+			});
+			
+			// 初始化获取所有资金账户
+			$.ajax({
+				type: 'POST',
+				dataType: 'json',
+				url: baseUrl + "getallledgersbyaccount",
+				data: {},
+				success : function(result) {
+					if (result.isSuccess) {
+						var ledgers = result.data;
+						for(var i = 0; i < ledgers.length; i++){
+							//ledgers[i].name:ledgers[i].balance
+							var point = [ ledgers[i].name ,ledgers[i].balance];
+							window.chart.series[0].addPoint(point, false);
+						}
+						window.chart.redraw();
+					} else {
+						layer.msg('加载失败 '+result.message, {
+							icon: 2,
+							time: 2000,
+						});
+					}
+				},
+			});
+		});
+	</script>
+
+</body>
+</html>
